@@ -1,0 +1,1809 @@
+<html>
+	<head>
+		<title>
+		</title>
+		<style>
+			span,div
+			{
+				color:antiquewhite;
+			}
+		</style>
+		<script src = "CE.js">
+		</script>
+		<script>
+			
+			function fillIt()
+			{
+				CARDPERPERSON = 13;
+				CARDTYPE = "yes", CARDTYPE1 = "yes", CARDTYPE2 = "yes", CARDTYPE3 = "yes";
+				inital = 0;
+				REDBACK = "back-red-75-1.png";
+				myCard = "", comp1Rank = "", comp2Rank = "", comp3Rank = "", comp3Suit = "", comp2Suit = "", comp1Suit = "",suitCard = "", suitCard1 = "", suitCard2 = "",suitCard3 = "",suitCard4 = "";
+				firstTurnP = false;
+				firstTurnC1 = false;
+				firstTurnC2 = false;
+				firstTurnC3 = false;
+				lastTurnP = false;
+				lastTurnC1 = false;
+				lastTurnC2 = false;
+				lastTurnC3 = false;
+				playerTurn = -1;
+				playerCardrank = new Array();
+				compCardrank1 = new Array();
+				compCardrank2 = new Array();
+				compCardrank3 = new Array();
+				playerCardsuit = new Array();
+				compCardsuit1 = new Array();
+				compCardsuit2 = new Array();
+				compCardsuit3 = new Array();
+				cardDashsuit = new Array();
+				cardDashsuit1 = new Array();
+				cardDashsuit2 = new Array();
+				cardDashsuit3 = new Array();
+				cardSelected = new Array();
+				playerPile = new Array();
+				compHand1 = new Array();
+				compHand2 = new Array();				
+				compHand3 = new Array();
+				
+				var deck = genDeck();
+				deck = shuttleIt(deck);
+				btnforPlay = document.getElementById('playBtn');
+				cardImage = document.getElementsByTagName('img');
+				btns = document.getElementsByTagName('button');
+				btnforPass = document.getElementById("passBtn");
+				btnforReset = document.getElementById("resetBtn")
+				myGif = document.getElementById("gif")
+				
+				for(i = 0; i < CARDPERPERSON; i++)
+				{
+					btns[i].style.padding = '1px';
+					cardDashsuit[i] = getImageThing(deck[i], IMAGE);
+					cardImage[i].src = cardDashsuit[i] + ".png";
+					playerCardrank.push(getImageThing(deck[i], RANK));
+					playerCardsuit.push(getImageThing(deck[i], SUIT));
+					if(parseInt(playerCardrank[i]) == 1 && parseInt(playerCardsuit[i]) == 0)
+					{
+						playerTurn = 0;
+						firstTurnP = true;
+						btnforPass.disabled = true;
+					}
+				}
+				for(i = 0; i < CARDPERPERSON; i++)
+				{
+					cardImage[i+13].src = REDBACK;
+					compCardrank1.push(parseInt(getImageThing(deck[i+13], RANK)));
+					compCardsuit1.push(parseInt(getImageThing(deck[i+13], SUIT)));
+					cardDashsuit1[i] = getImageThing(deck[i+13], IMAGE);
+					if(compCardrank1[i] == 1 && compCardsuit1[i] == 0)
+					{
+						playerTurn = 1;
+						firstTurnC1 = true;
+					}
+				}
+				for(i = 0; i < CARDPERPERSON; i++)
+				{
+					cardImage[i+26].src = REDBACK;
+					compCardrank2.push(parseInt(getImageThing(deck[i+26], RANK)));
+					compCardsuit2.push(parseInt(getImageThing(deck[i+26], SUIT)));
+					cardDashsuit2[i] = getImageThing(deck[i+26], IMAGE);
+					if(compCardrank2[i] == 1 && compCardsuit2[i] == 0)
+					{
+						playerTurn = 2;
+						firstTurnC2 = true;
+					}
+				}
+				for(i = 0; i < CARDPERPERSON; i++)
+				{
+					cardImage[i+39].src = REDBACK;
+					compCardrank3.push(parseInt(getImageThing(deck[i+39], RANK)));
+					compCardsuit3.push(parseInt(getImageThing(deck[i+39], SUIT)));
+					cardDashsuit3[i] = getImageThing(deck[i+39], IMAGE);
+					if(compCardrank3[i] == 1 && compCardsuit3[i] == 0)
+					{
+						playerTurn = 3;
+						firstTurnC3 = true;
+					}
+				}
+				//cardImage[0].onclick = null; -> unclickable
+				btnforPlay.disabled = true;
+			}
+			function selectCard(card)
+			{
+				//cardImage[card].style.marginBottom = "10px"; //adjusting card after click 
+				inital++;
+				if(inital == 1)
+				{
+					myCard = parseInt(playerCardrank[card]);
+					suitCard = parseInt(playerCardsuit[card]);
+					cardSelected[0] = myCard + "-" + suitCard; //rank-suit
+					CARDTYPE = "single";
+					equalCType();
+					cardTypeQ();
+					
+					disableAll();
+					for(i = 0; i < CARDPERPERSON; i++)
+					{
+						if(myCard == parseInt(playerCardrank[i]))
+						{
+							btns[i].disabled = false;
+						}
+						if(suitCard == parseInt(playerCardsuit[i]))
+						{
+							btns[i].disabled = false;
+						}
+						if(myCard+1 == parseInt(playerCardrank[i]))
+						{
+							btns[i].disabled = false;
+						}
+						if(myCard-1 == parseInt(playerCardrank[i]))
+						{
+							btns[i].disabled = false;
+						}
+						if(firstTurnP == true && myCard == 1 && suitCard == 0)
+						{
+							btnforPlay.disabled = false;
+						}
+					}
+					
+					btns[card].disabled = true;
+					btns[card].style.backgroundColor = "black";
+					newCard = card;
+					
+				}
+				if(inital == 2)
+				{
+					myCard1 = parseInt(playerCardrank[card]);
+					suitCard1 = parseInt(playerCardsuit[card]);
+					cardSelected[1] = myCard1 + "-" + suitCard1;
+					disableAll();
+					for(i = 0; i < CARDPERPERSON; i++)
+					{
+						if(myCard == myCard1)
+						{
+							if(myCard1 == parseInt(playerCardrank[i]))
+							{
+								btns[i].disabled = false;
+							}
+							CARDTYPE = "double";
+							equalCType();
+							cardTypeQ();
+						}
+						if(suitCard == suitCard1)
+						{
+							if(suitCard1 == parseInt(playerCardsuit[i]))
+							{
+								btns[i].disabled = false;
+								btnforPlay.disabled = true;
+							}
+						}
+						if(myCard+1 == myCard1)
+						{
+							if(myCard1+1 == parseInt(playerCardrank[i]))
+							{
+								 btns[i].disabled = false;
+								 btnforPlay.disabled = true;
+							}
+						}
+						if(myCard-1 == myCard1)
+						{
+							if(myCard1-1 == parseInt(playerCardrank[i]))
+							{
+								 btns[i].disabled = false;
+								 btnforPlay.disabled = true;
+							}
+						}
+						if(firstTurnP == true && ((myCard1 == 1 && suitCard1 == 0) || (myCard == 1 && suitCard == 0)))
+						{
+							btnforPlay.disabled = false;
+						}
+					}
+					btns[card].disabled = true;
+					btns[card].style.backgroundColor = "black";
+					newCard1 = card;
+					
+				}
+				if(inital == 3)
+				{	
+					myCard2 = parseInt(playerCardrank[card]);
+					suitCard2 = parseInt(playerCardsuit[card]);
+					cardSelected[2] = myCard2 + "-" + suitCard2;
+					
+					disableAll();
+					for(i = 0; i < CARDPERPERSON; i++)
+					{
+						if(myCard1 == myCard2)
+						{
+							if(myCard2 == parseInt(playerCardrank[i]))
+							{
+								btns[i].disabled = false;
+							}
+							CARDTYPE = "triple";
+							equalCType();
+							cardTypeQ();							
+							for(i = 0; i < CARDPERPERSON; i++)//re-enter if triple
+							{
+								btns[i].disabled = false;
+							}
+						}
+						if(suitCard1 == suitCard2)
+						{
+							if(suitCard2 == parseInt(playerCardsuit[i]))
+							{
+								btns[i].disabled = false;
+								btnforPlay.disabled = true;
+							}
+						}
+						if(myCard1+1 == myCard2)
+						{
+							if(myCard2+1 == parseInt(playerCardrank[i]))
+							{
+								 btns[i].disabled = false;
+								 btnforPlay.disabled = true;
+							}
+						}
+						if(myCard1-1 == myCard2)
+						{
+							if(myCard2-1 == parseInt(playerCardrank[i]))
+							{
+								 btns[i].disabled = false;
+								 btnforPlay.disabled = true;
+							}
+						}
+					}
+					if(firstTurnP == true && ((myCard2 == 1 && suitCard2 == 0) || (myCard1 == 1 && suitCard1 == 0) || (myCard == 1 && suitCard == 0)))
+					{
+						btnforPlay.disabled = false;
+					}	
+					btns[card].disabled = true;
+					btns[card].style.backgroundColor = "black";
+					newCard2 = card;
+				}
+				if(inital == 4)
+				{
+					btnforPlay.disabled = true;
+					myCard3 = parseInt(playerCardrank[card]);
+					suitCard3 = parseInt(playerCardsuit[card]);
+					cardSelected[3] = myCard3 + "-" + suitCard3;
+					disableAll();
+					for(i = 0; i < CARDPERPERSON; i++)
+					{
+						if(suitCard2 == suitCard3)
+						{
+							if(suitCard3 == parseInt(playerCardsuit[i]))
+							{
+								btns[i].disabled = false;
+							}
+						}
+						if(myCard2+1 == myCard3)
+						{
+							if(myCard3+1 == parseInt(playerCardrank[i]))
+							{
+								 btns[i].disabled = false;
+							}
+						}
+						if(myCard2-1 == myCard2)
+						{
+							if(myCard3-1 == parseInt(playerCardrank[i]))
+							{
+								 btns[i].disabled = false;
+							}
+						}
+						if(myCard1 == myCard2)
+						{
+							if(myCard3 == parseInt(playerCardrank[i]))
+							{
+								btns[i].disabled = false;
+							}
+						}
+						if(myCard2 == myCard3)
+						{
+							for(i = 0; i < CARDPERPERSON; i++)//re-enter if 4
+							{
+								btns[i].disabled = false;
+							}
+						}
+					}
+					//playbtndisable
+					btns[card].disabled = true;
+					btns[card].style.backgroundColor = "black";
+					newCard3 = card;
+				}
+				if(inital == 5)
+				{
+					myCard4 = parseInt(playerCardrank[card]);
+					suitCard4 = parseInt(playerCardsuit[card]);
+					cardSelected[4] = myCard4 + "-" + suitCard4;
+					disableAll();
+					if(myCard == myCard1 && myCard1 == myCard2 && myCard2 == myCard3)
+					{
+						CARDTYPE = "fourofakind";
+						equalCType();
+						cardTypeQ();
+					}
+					if(myCard == myCard1 && myCard1 == myCard2 && myCard3 == myCard4)
+					{			
+						CARDTYPE = "fullhouse";
+						equalCType();
+						cardTypeQ();
+						
+					}
+					if(suitCard == suitCard1 && suitCard1 == suitCard2 && suitCard2 == suitCard3 && suitCard3 == suitCard4)
+					{		
+						CARDTYPE = "flush";
+						equalCType();
+						cardTypeQ();
+					}
+					if((myCard+1 == myCard1 && myCard1+1 == myCard2 && myCard2+1 == myCard3 && myCard3+1 == myCard4) || (myCard-1 == myCard1 && myCard1-1 == myCard2 && myCard2-1 == myCard3 && myCard3-1 == myCard4))
+					{		
+						CARDTYPE = "straight";
+						equalCType();
+						cardTypeQ();						
+					}
+					if(((myCard+1 == myCard1 && myCard1+1 == myCard2 && myCard2+1 == myCard3 && myCard3+1 == myCard4) || (myCard-1 == myCard1 && myCard1-1 == myCard2 && myCard2-1 == myCard3 && myCard3-1 == myCard4)) && (suitCard == suitCard1 && suitCard1 == suitCard2 && suitCard2 == suitCard3 && suitCard3 == suitCard4))
+					{					
+						CARDTYPE = "straightflush";
+						equalCType();
+						cardTypeQ();						
+						if((myCard == 8 || myCard4 == 8) && (myCard == 13  || myCard4 == 13) && suitCard == 3)
+						{		
+							CARDTYPE = "royalflush";
+							equalCType();
+							cardTypeQ();
+						}							
+					}
+					if(firstTurnP == true && ((myCard4 == 1 && suitCard4 == 0) ||(myCard3 == 1 && suitCard3 == 0) || (myCard1 == 1 && suitCard1 == 0) || (myCard == 1 && suitCard == 0) || (myCard2 == 1 && suitCard2 == 0)))
+					{
+						btnforPlay.disabled = false;
+					}
+					btns[card].style.backgroundColor = "black";
+					newCard4 = card;
+					inital = 0;
+				}
+				
+			}
+			function cardTypeQ()
+			{
+				if(CARDTYPE3 == "" && CARDTYPE2 == "" && CARDTYPE1 == "")
+				{
+					btnforPlay.disabled = false;
+					btnforPass.disabled = true;
+				}
+			}
+			function equalCType()
+			{
+				
+				if(lastTurnC1 == true && ((CARDTYPE3 == CARDTYPE || CARDTYPE2 == CARDTYPE || CARDTYPE1 == CARDTYPE) && (myCard >= comp1Rank[0])))
+				{
+					btnforPlay.disabled = false;
+					if(myCard == comp1Rank[0])
+					{
+						if(suitCard > comp1Suit[0] || suitCard1 > comp1Suit[0] || suitCard2 > comp1Suit[0] || suitCard3 > comp1Suit[0] || suitCard4 > comp1Suit[0])
+						{
+							btnforPlay.disabled = false;
+						}
+						else
+						{
+							btnforPlay.disabled = true;
+						}
+					}
+				}
+
+				if(lastTurnC2 == true && ((CARDTYPE3 == CARDTYPE || CARDTYPE2 == CARDTYPE || CARDTYPE1 == CARDTYPE) && (myCard >= comp2Rank[0]) ))
+				{
+					btnforPlay.disabled = false;
+					if(myCard == comp2Rank[0])
+					{
+						if(suitCard > comp2Suit[0] || suitCard1 > comp2Suit[0] || suitCard2 > comp2Suit[0] || suitCard3 > comp2Suit[0] || suitCard4 > comp2Suit[0])
+						{
+							btnforPlay.disabled = false;
+						}
+						else
+						{
+							btnforPlay.disabled = true;
+						}	
+					}
+				}
+
+				if(lastTurnC3 == true && ((CARDTYPE3 == CARDTYPE || CARDTYPE2 == CARDTYPE || CARDTYPE1 == CARDTYPE) && (myCard >= comp3Rank[0])))
+				{
+					btnforPlay.disabled = false;
+					if(myCard == comp3Rank[0])
+					{
+						if (suitCard > comp3Suit[0] || suitCard1 > comp3Suit[0] || suitCard2 > comp3Suit[0] || suitCard3 > comp3Suit[0] || suitCard4 > comp3Suit[0])
+						{
+							btnforPlay.disabled = false;
+						}
+						else
+						{
+							btnforPlay.disabled = true;
+						}	
+					}
+					
+				}	
+			}
+			function resetCard()
+			{
+				//reset hand array.
+				//reset selected cards
+				//
+				for(i = 0; i < CARDPERPERSON; i++)
+				{
+					btns[i].style.backgroundColor = "white";
+					btns[i].disabled = false;
+				}
+				btnforPlay.disabled = true;
+
+				inital  = 0;
+				myCard = "";
+				myCard1 = "";
+				myCard2 = "";
+				myCard3 = "";
+				myCard4 = "";
+				suitCard = "";
+				suitCard1 = "";
+				suitCard2 = "";
+				suitCard3 = "";
+				suitCard4 = "";
+				cardSelected = [];
+			}
+			function playCard()
+			{
+				//Must remove card out of deck. 
+				//When deck = 0, someone wins.
+				//remove selected cards.
+				firstTurnP = false;
+				for(x = 0; x < CARDPERPERSON; x++)
+				{
+					if(cardDashsuit[x] == cardSelected[0])
+					{
+						btns[x].style.display = "none";
+						played1 = cardDashsuit[x];
+						cardDashsuit.splice(x, 1, "");
+						playerPile.push(played1);
+					}
+					if(cardDashsuit[x] == cardSelected[1])
+					{
+						btns[x].style.display = "none";
+						played2 = cardDashsuit[x];
+						cardDashsuit.splice(x, 1, "");
+						playerPile.push(played2);
+					}
+					if(cardDashsuit[x] == cardSelected[2])
+					{
+						btns[x].style.display = "none";
+						played3 = cardDashsuit[x];
+						cardDashsuit.splice(x, 1, "");
+						playerPile.push(played3);
+					}
+					if(cardDashsuit[x] == cardSelected[3])
+					{
+						btns[x].style.display = "none";
+						played4 = cardDashsuit[x];
+						cardDashsuit.splice(x, 1, "");
+						playerPile.push(played4);
+					}
+					if(cardDashsuit[x] == cardSelected[4])
+					{
+						btns[x].style.display = "none";
+						played5 = cardDashsuit[x];
+						cardDashsuit.splice(x, 1, "");
+						playerPile.push(played5);
+					}
+				}
+				for(i = 0; i < CARDPERPERSON; i++)
+				{
+					btns[i].disabled = false;
+				}
+				
+				addcheckTurn();
+				if(playerTurn == 1 || playerTurn === 2 || playerTurn == 3)
+				{
+					btnforPlay.disabled = true;
+				}
+				
+			}
+			function checkWin()
+			{
+				if(playerPile.length == 13)
+				{
+					//Gif Credits: Henry Creech
+					btnforPass.disabled = true;
+					btnforPlay.disabled = true;
+					btnforReset.disabled = true;
+					disableAll();
+					myGif.src = "Win.gif";
+				}
+				if(compHand1.length == 13)
+				{
+					//Gif Credits: Henry Creech
+					btnforPass.disabled = true;
+					btnforPlay.disabled = true;
+					btnforReset.disabled = true;
+					disableAll();
+					myGif.src = "Lose.gif";
+				}
+				if(compHand2.length == 13)
+				{
+					//Gif Credits: Henry Creech
+					btnforPass.disabled = true;
+					btnforPlay.disabled = true;
+					btnforReset.disabled = true;
+					disableAll();
+					myGif.src = "Lose.gif";
+				}
+				if(compHand3.length == 13)
+				{
+					//Gif Credits: Henry Creech
+					btnforPass.disabled = true;
+					btnforPlay.disabled = true;
+					btnforReset.disabled = true;
+					disableAll();
+					myGif.src = "Lose.gif";
+				}
+			}
+			function comp1Play()
+			{						
+				if(playerTurn == 1)
+				{
+					if(firstTurnC1 == true)
+					{
+						wholeThing:
+						for(i = 0; i < CARDPERPERSON; i++)
+						{
+							if(compCardrank1[i] == 1)
+							{
+								lastTurnC1 = true;
+								lastTurnC2 = false;
+								lastTurnC3 = false;
+								cardImage[i+13].src = "";
+								compHand1.push(compCardrank1[i]);
+								comp1Rank = compCardrank1.splice(i, 1, "");
+								comp1Suit = compCardsuit1.splice(i, 1, "");
+								if(compHand1.length == 1)
+								{
+									cardImage[52].src = cardDashsuit1[i] + ".png";
+									CARDTYPE1 = "single";
+								}
+								if(compHand1.length == 2)
+								{
+									cardImage[53].src = cardDashsuit1[i] + ".png";
+									CARDTYPE1 = "double";
+								}
+								if(compHand1.length == 3)
+								{
+									cardImage[54].src = cardDashsuit1[i] + ".png";
+									CARDTYPE1 = "triple";
+								}
+								if(compHand1.length == 4)
+								{
+									cardImage[55].src = cardDashsuit1[i] + ".png";
+									CARDTYPE1 = "fourofakind";
+									for(x = 0; x < CARDPERPERSON; x++)
+									{
+										if(compCardrank1[x] !== 1)
+										{
+											if(compCardrank1[x] !== "")
+											{
+												cardImage[56].src = cardDashsuit1[x] + ".png";
+												compHand1.push(compCardrank1[x]);
+												cardImage[x+13].src = "";
+												compCardrank1.splice(x, 1, "");
+												compCardsuit1.splice(x, 1, "");
+												addcheckTurn();
+												break wholeThing;
+											}
+										}
+									}
+								}
+							}
+							if(i >= 12)
+							{
+								addcheckTurn();
+								break wholeThing;
+							}
+						}
+						firstTurnC1 = false;
+					}
+					else
+					{
+						if(CARDTYPE == "" && CARDTYPE2 == "" && CARDTYPE3 == "")
+						{
+							for(i = 0; i < CARDPERPERSON; i++)
+							{
+								if(compCardrank1[i] !== "")
+								{
+									lastTurnC1 = true;
+									lastTurnC2 = false;
+									lastTurnC3 = false;
+									cardImage[52].src = cardDashsuit1[i] + ".png";
+									compHand1.push(compCardrank1[i]);
+									cardImage[i+13].src = "";
+									comp1Rank = compCardrank1.splice(i, 1, "");
+									comp1Suit = compCardsuit1.splice(i, 1, "");
+									CARDTYPE1 = "single";
+									addcheckTurn();
+									break;
+								}
+							}
+						}
+						if(CARDTYPE == "single" || CARDTYPE2 == "single" || CARDTYPE3 == "single")
+						{
+							for(i = 0; i < CARDPERPERSON; i++)
+							{
+								if(myCard < compCardrank1[i])
+								{
+									if(compCardrank1[i] !== "")
+									{
+										lastTurnC1 = true;
+										lastTurnC2 = false;
+										lastTurnC3 = false;
+										cardImage[52].src = cardDashsuit1[i] + ".png";
+										compHand1.push(compCardrank1[i]);
+										cardImage[i+13].src = "";
+										comp1Rank = compCardrank1.splice(i, 1, "");
+										comp1Suit = compCardsuit1.splice(i, 1, "");
+										CARDTYPE1 = "single";
+										addcheckTurn();
+										break;
+									}
+								}
+								if(i >= 12)
+								{
+									cardImage[52].src = "";
+									CARDTYPE1 = "";
+									comp1Rank[0] = myCard;
+									addcheckTurn();
+									break;
+								}
+							}
+						}
+						if(CARDTYPE == "double" || CARDTYPE2 == "double" || CARDTYPE3 == "double" )
+						{
+							wholeThing:
+							for(i = 0; i < 13; i++)
+							{
+								if(myCard < compCardrank1[i] && compCardrank1[i] !== "")
+								{
+									for(x = 0; x < CARDPERPERSON; x++)
+									{
+										if(compCardrank1[i] == compCardrank1[x] && compCardrank1[x] !== "" && x != i)
+										{
+											lastTurnC1 = true;
+											lastTurnC2 = false;
+											lastTurnC3 = false;
+											cardImage[52].src = cardDashsuit1[i] + ".png";
+											compHand1.push(compCardrank1[i]);
+											cardImage[i+13].src = "";
+											comp1Rank = compCardrank1.splice(i, 1, "");
+											comp1Suit = compCardsuit1.splice(i, 1, "");
+											cardImage[53].src = cardDashsuit1[x] + ".png";
+											cardImage[x+13].src = "";
+											compHand1.push(compCardrank1[x]);
+											compCardrank1.splice(x, 1, "");
+											compCardsuit1.splice(x, 1, "");
+											CARDTYPE1 = "double";
+											addcheckTurn();
+											break wholeThing;
+										}
+									}
+								}
+								if(i >= 12)
+								{
+									cardImage[52].src = "";
+									cardImage[53].src = "";
+									CARDTYPE1 = "";
+									comp1Rank[0] = myCard;
+									addcheckTurn();
+									break wholeThing;
+								}
+							}
+						}
+						if(CARDTYPE == "triple" || CARDTYPE2 == "triple" || CARDTYPE3 == "triple")
+						{
+							wholeThing:
+							for(i = 0; i < 13; i++)
+							{
+								if(myCard < compCardrank1[i] && compCardrank1[i] !== "")
+								{
+									for(x = 0; x < CARDPERPERSON; x++)
+									{
+										if(compCardrank1[i] == compCardrank1[x] && compCardrank1[x] !== "")
+										{
+											for(a = 0; a < CARDPERPERSON; a++)
+											{
+												if(compCardrank1[i] == compCardrank1[a] && compCardrank1[a] !== "" && x != i && x != a)
+												{
+													lastTurnC1 = true;
+													lastTurnC2 = false;
+													lastTurnC3 = false;
+													cardImage[52].src = cardDashsuit1[i] + ".png";
+													compHand1.push(parseInt(compCardrank1[i]));
+													cardImage[i+13].src = "";
+													comp1Rank = compCardrank1.splice(i, 1, "");
+													comp1Suit = compCardsuit1.splice(i, 1, "");
+													cardImage[53].src = cardDashsuit1[x] + ".png";
+													cardImage[x+13].src = "";
+													compHand1.push(compCardrank1[x]);
+													compCardrank1.splice(x, 1, "");
+													compCardsuit1.splice(x, 1, "");
+													cardImage[54].src = cardDashsuit1[a] + ".png";
+													cardImage[a+13].src = "";
+													compHand1.push(compCardrank1[a]);
+													compCardrank1.splice(a, 1, "");
+													compCardsuit1.splice(a, 1, "");
+													CARDTYPE1 = "triple";
+													addcheckTurn();
+													break wholeThing;
+												}
+											}	
+										}
+									}
+								}
+								if(i >= 12)
+								{
+									cardImage[52].src = "";
+									cardImage[53].src = "";
+									cardImage[54].src = "";
+									CARDTYPE1 = "";
+									comp1Rank[0] = myCard;
+									addcheckTurn();
+									break wholeThing;
+								}	
+							}
+						}
+						if(CARDTYPE == "fullhouse")
+						{
+							addcheckTurn();
+						}
+						if(CARDTYPE == "fourofakind" || CARDTYPE2 == "fourofakind" || CARDTYPE3 == "fourofakind")
+						{
+							wholeThing:
+							for(i = 0; i < 13; i++)
+							{
+								if(myCard < compCardrank1[i] && compCardrank1[i] !== "")
+								{
+									for(x = 0; x < CARDPERPERSON; x++)
+									{
+										if(compCardrank1[i] == compCardrank1[x] && compCardrank1[x] !== "")
+										{
+											for(a = 0; a < CARDPERPERSON; a++)
+											{
+												if(compCardrank1[i] == compCardrank1[a] && compCardrank1[a] !== "")
+												{
+													for(b = 0; b < CARDPERPERSON; b++)
+													{
+														for(c = 0; c < CARDPERPERSON; c++)
+														{
+															if(compCardrank1[i] == compCardrank1[b] && compCardrank1[b] !== "" && x != i && x != a && x != b && i != a && i != b && a != b && compCardrank2[c] != "")
+															{
+																lastTurnC1 = true;
+																lastTurnC2 = false;
+																lastTurnC3 = false;
+																cardImage[52].src = cardDashsuit1[i] + ".png";
+																compHand1.push(compCardrank1[i]);
+																cardImage[i+13].src = "";
+																comp1Rank = compCardrank1.splice(i, 1, "");
+																comp1Suit = compCardsuit1.splice(i, 1, "");
+																cardImage[53].src = cardDashsuit1[x] + ".png";
+																cardImage[x+13].src = "";
+																compHand1.push(compCardrank1[x]);
+																compCardrank1.splice(x, 1, "");
+																compCardsuit1.splice(x, 1, "");
+																cardImage[54].src = cardDashsuit1[a] + ".png";
+																cardImage[a+13].src = "";
+																compHand1.push(compCardrank1[a]);
+																compCardrank1.splice(a, 1, "");
+																compCardsuit1.splice(a, 1, "");
+																cardImage[55].src = cardDashsuit1[b] + ".png";
+																cardImage[b+13].src = "";
+																compHand1.push(compCardrank1[b]);
+																compCardrank1.splice(b, 1, "");
+																compCardsuit1.splice(b, 1, "");
+																cardImage[56].src = cardDashsuit1[c] + ".png";
+																cardImage[c+13].src = "";
+																compHand1.push(compCardrank1[c]);
+																compCardrank1.splice(c, 1, "");
+																compCardsuit1.splice(c, 1, "");
+																CARDTYPE1 = "fourofakind";
+																addcheckTurn();
+																break wholeThing;
+															}
+														}
+													}
+												}
+											}	
+										}
+									}
+								}
+								if(i >= 12)
+								{
+									cardImage[52].src = "";
+									cardImage[53].src = "";
+									cardImage[54].src = "";
+									cardImage[55].src = "";
+									cardImage[56].src = "";
+									CARDTYPE1 = "";
+									comp1Rank[0] = myCard;
+									addcheckTurn();
+									break wholeThing;
+								}
+							}
+						}
+						if(CARDTYPE == "straight")
+						{
+							addcheckTurn();
+						}
+						if(CARDTYPE == "flush")
+						{
+							addcheckTurn();
+						}
+						if(CARDTYPE == "straightflush")
+						{
+							addcheckTurn();
+						}
+						if(CARDTYPE == "royalflush")
+						{
+							addcheckTurn();
+						}
+						
+					}
+				}
+			}
+			function comp2Play()
+			{		
+				if(playerTurn == 2)
+				{
+					if(firstTurnC2 == true)
+					{
+						wholeThing:
+						for(i = 0; i < CARDPERPERSON; i++)
+						{
+							if(compCardrank2[i] == 1)
+							{
+								lastTurnC1 = false;
+								lastTurnC2 = true;
+								lastTurnC3 = false;
+								cardImage[i+26].src = "";
+								compHand2.push(compCardrank2[i]);
+								comp2Rank = compCardrank2.splice(i, 1, "");
+								comp2Suit = compCardsuit2.splice(i, 1, "");
+								if(compHand2.length == 1)
+								{
+									cardImage[57].src = cardDashsuit2[i] + ".png";
+									CARDTYPE2 = "single";
+								}
+								if(compHand2.length == 2)
+								{
+									cardImage[58].src = cardDashsuit2[i] + ".png";
+									CARDTYPE2 = "double";
+								}
+								if(compHand2.length == 3)
+								{
+									cardImage[59].src = cardDashsuit2[i] + ".png";
+									CARDTYPE2 = "triple";
+								}
+								if(compHand2.length == 4)
+								{
+									cardImage[60].src = cardDashsuit2[i] + ".png";
+									CARDTYPE2 = "fourofakind";
+									for(x = 0; x < CARDPERPERSON; x++)
+									{
+										if(compCardrank2[x] !== 1)
+										{
+											if(compCardrank2[x] !== "")
+											{
+												cardImage[61].src = cardDashsuit2[x] + ".png";
+												compHand2.push(compCardrank2[x]);
+												cardImage[x+26].src = "";
+												compCardrank2.splice(x, 1, "");
+												compCardsuit2.splice(x, 1, "");
+												addcheckTurn();
+												break wholeThing;
+											}
+										}
+									}
+								}
+							}
+							if(i >= 12)
+							{
+								addcheckTurn();
+								break wholeThing;
+							}
+						}
+						firstTurnC2 = false;
+					}
+					else
+					{
+						if(CARDTYPE == "" && CARDTYPE1 == "" && CARDTYPE3 == "")
+						{
+							for(i = 0; i < CARDPERPERSON; i++)
+							{
+								if(compCardrank2[i] !== "")
+								{
+									lastTurnC1 = false;
+									lastTurnC2 = true;
+									lastTurnC3 = false;
+									cardImage[57].src = cardDashsuit2[i] + ".png";
+									compHand2.push(compCardrank2[i]);
+									cardImage[i+26].src = "";
+									comp2Rank = compCardrank2.splice(i, 1, "");
+									comp2Suit = compCardsuit2.splice(i, 1, "");									
+									CARDTYPE2 = "single";
+									addcheckTurn();
+									break;
+								}
+							}
+						}
+						if(CARDTYPE1 == "single" || CARDTYPE == "single" || CARDTYPE3 == "single")
+						{
+							for(i = 0; i < CARDPERPERSON; i++)
+							{
+								if(comp1Rank[0] < compCardrank2[i])
+								{
+									if(compCardrank2[i] !== "")
+									{
+										lastTurnC1 = false;
+										lastTurnC2 = true;
+									    lastTurnC3 = false;
+										cardImage[57].src = cardDashsuit2[i] + ".png";
+										compHand2.push(compCardrank2[i]);
+										cardImage[i+26].src = "";
+										comp2Rank = compCardrank2.splice(i, 1, "");
+										comp2Suit = compCardsuit2.splice(i, 1, "");
+										CARDTYPE2 = "single";
+										addcheckTurn();
+										break;
+									}
+								}
+								if(i >= 12)
+								{
+									cardImage[57].src = "";
+									if(myCard == 0)
+									{
+									}
+									else
+									{
+										comp2Rank[0] = myCard;
+									}
+									if(comp1Rank == 0)
+									{
+									}
+									else
+									{
+										comp2Rank[0] = comp1Rank[0];
+									}
+									CARDTYPE2 = "";
+									addcheckTurn();
+									break;
+								}
+							}
+						}
+						if(CARDTYPE1 == "double" || CARDTYPE == "double" || CARDTYPE3 == "double")
+						{
+							wholeThing:
+							for(i = 0; i < 13; i++)
+							{
+								if(comp1Rank[0] < compCardrank2[i] && compCardrank2[i] !== "")
+								{
+									for(x = 0; x < CARDPERPERSON; x++)
+									{
+										if(compCardrank2[i] == compCardrank2[x] && compCardrank2[x] !== "" && i != x)
+										{
+											lastTurnC1 = false;
+											lastTurnC2 = true;
+											lastTurnC3 = false;
+											cardImage[57].src = cardDashsuit2[i] + ".png";
+											compHand2.push(compCardrank2[i]);
+											cardImage[i+26].src = "";
+											comp2Rank = compCardrank2.splice(i, 1, "");
+											comp2Suit = compCardsuit2.splice(i, 1, "");
+											cardImage[58].src = cardDashsuit2[x] + ".png";
+											cardImage[x+26].src = "";
+											compHand2.push(compCardrank2[x]);
+											compCardrank2.splice(x, 1, "");
+											compCardsuit2.splice(x, 1, "");
+											CARDTYPE2 = "double";
+											addcheckTurn();
+											break wholeThing;
+										}
+									}
+								}
+								if(i >= 12)
+								{
+									if(myCard == 0)
+									{
+									}
+									else
+									{
+										comp2Rank[0] = myCard;
+									}
+									if(comp1Rank == 0)
+									{
+									}
+									else
+									{
+										comp2Rank[0] = comp1Rank[0];
+									}
+									cardImage[57].src = "";
+									cardImage[58].src = "";
+									CARDTYPE2 = "";
+									addcheckTurn();
+									break wholeThing;
+								}
+							}
+						}
+						if(CARDTYPE1 == "triple" || CARDTYPE == "triple" || CARDTYPE3 == "triple")
+						{
+							wholeThing:
+							for(i = 0; i < 13; i++)
+							{
+								if(comp1Rank[0] < compCardrank2[i] && compCardrank2[i] !== "")
+								{
+									for(x = 0; x < CARDPERPERSON; x++)
+									{
+										if(compCardrank2[i] == compCardrank2[x] && compCardrank2[x] !== "")
+										{
+											for(a = 0; a < CARDPERPERSON; a++)
+											{
+												if(compCardrank2[i] == compCardrank2[a] && compCardrank2[a] !== "" && a != i && x != i && a != x )
+												{
+													lastTurnC1 = false;
+												    lastTurnC2 = true;
+												    lastTurnC3 = false;
+													cardImage[57].src = cardDashsuit2[i] + ".png";
+													compHand2.push(compCardrank2[i]);
+													cardImage[i+26].src = "";
+													comp2Rank = compCardrank2.splice(i, 1, "");
+													comp2Suit = compCardsuit2.splice(i, 1, "");
+													cardImage[58].src = cardDashsuit2[x] + ".png";
+													cardImage[x+26].src = "";
+													compHand2.push(compCardrank2[x]);
+													compCardrank2.splice(x, 1, "");
+													compCardsuit2.splice(x, 1, "");
+													cardImage[59].src = cardDashsuit2[a] + ".png";
+													cardImage[a+26].src = "";
+													compHand2.push(compCardrank2[a]);
+													compCardrank2.splice(a, 1, "");
+													compCardsuit2.splice(a, 1, "");
+													CARDTYPE2 = "triple";
+													addcheckTurn();
+													break wholeThing;
+												}
+											}	
+										}
+									}
+								}
+								if(i >= 12)
+								{
+									cardImage[57].src = "";
+									cardImage[58].src = "";
+									cardImage[59].src = "";
+									if(myCard == 0)
+									{
+									}
+									else
+									{
+										comp2Rank[0] = myCard;
+									}
+									if(comp1Rank == 0)
+									{
+									}
+									else
+									{
+										comp2Rank[0] = comp1Rank[0];
+									}
+									CARDTYPE2 = "";
+									addcheckTurn();
+									break wholeThing;
+								}
+							}
+						}
+						if(CARDTYPE == "fullhouse")
+						{
+							addcheckTurn();
+						}
+						if(CARDTYPE1 == "fourofakind" || CARDTYPE == "fourofakind" || CARDTYPE3 == "fourofakind")
+						{
+							wholeThing:
+							for(i = 0; i < 13; i++)
+							{
+								if(comp1Rank[0] < compCardrank2[i] && compCardrank2[i] !== "")
+								{
+									for(x = 0; x < CARDPERPERSON; x++)
+									{
+										if(compCardrank2[i] == compCardrank2[x] && compCardrank2[x] !== "")
+										{
+											for(a = 0; a < CARDPERPERSON; a++)
+											{
+												if(compCardrank2[i] == compCardrank2[a] && compCardrank2[a] !== "")
+												{
+													for(b = 0; b < CARDPERPERSON; b++)
+													{
+														for(c = 0; c < CARDPERPERSON; c++)
+														{
+															if(compCardrank2[i] == compCardrank2[b] && compCardrank2[b] !== "" && x != i && x != a && x != b && i != a && i != b && a != b && compCardrank2[c] != "")
+															{
+																lastTurnC1 = false;
+															    lastTurnC2 = true;
+															    lastTurnC3 = false;		
+																cardImage[57].src = cardDashsuit2[i] + ".png";
+																compHand2.push(compCardrank2[i]);
+																cardImage[i+26].src = "";
+																comp2Rank = compCardrank2.splice(i, 1, "");
+																comp2Suit = compCardsuit2.splice(i, 1, "");
+																cardImage[58].src = cardDashsuit2[x] + ".png";
+																cardImage[x+26].src = "";
+																compHand2.push(compCardrank2[x]);
+																compCardrank2.splice(x, 1, "");
+																compCardsuit2.splice(x, 1, "");
+																cardImage[59].src = cardDashsuit2[a] + ".png";
+																cardImage[a+26].src = "";
+																compHand2.push(compCardrank2[a]);
+																compCardrank2.splice(a, 1, "");
+																compCardsuit2.splice(a, 1, "");
+																cardImage[60].src = cardDashsuit2[b] + ".png";
+																cardImage[b+26].src = "";
+																compHand2.push(compCardrank2[b]);
+																compCardrank2.splice(b, 1, "");
+																compCardsuit2.splice(b, 1, "");
+																cardImage[c+26].src = "";
+																cardImage[61].src = cardDashsuit2[c] + ".png";
+																compHand2.push(compCardrank2[c]);
+																compCardrank2.splice(c, 1, "");
+																compCardsuit2.splice(c, 1, "");
+																CARDTYPE2 = "fourofakind";
+																addcheckTurn();
+																break wholeThing;
+															}
+														}
+													}
+												}
+											}	
+										}
+									}
+								}
+								if(i >= 12)
+								{
+									cardImage[57].src = "";
+									cardImage[58].src = "";
+									cardImage[59].src = "";
+									cardImage[60].src = "";
+									cardImage[61].src = "";
+									if(myCard == 0)
+									{
+									}
+									else
+									{
+										comp2Rank[0] = myCard;
+									}
+									if(comp1Rank == 0)
+									{
+									}
+									else
+									{
+										comp2Rank[0] = comp1Rank[0];
+									}
+									CARDTYPE2 = "";
+									addcheckTurn();
+									break wholeThing;
+								}
+							}
+						}
+						if(CARDTYPE == "straight")
+						{
+							addcheckTurn();
+						}
+						if(CARDTYPE == "flush")
+						{
+							addcheckTurn();
+						}
+						if(CARDTYPE == "straightflush")
+						{
+							addcheckTurn();
+						}
+						if(CARDTYPE == "royalflush")
+						{
+							addcheckTurn();
+						}
+						
+					}
+				}
+			}
+			function comp3Play()
+			{
+				if(playerTurn == 3)
+				{
+					if(firstTurnC3 == true)
+					{
+						wholeThing:
+						for(i = 0; i < CARDPERPERSON; i++)
+						{
+							if(compCardrank3[i] == 1)
+							{
+								lastTurnC1 = false;
+								lastTurnC2 = false;
+								lastTurnC3 = true;
+								cardImage[i+39].src = "";
+								compHand3.push(compCardrank3[i]);
+								comp3Rank = compCardrank3.splice(i, 1, "");
+								comp3Suit = compCardsuit3.splice(i, 1, "");
+								if(compHand3.length == 1)
+								{
+									cardImage[62].src = cardDashsuit3[i] + ".png";
+									CARDTYPE3 = "single";
+								}
+								if(compHand3.length == 2)
+								{
+									cardImage[63].src = cardDashsuit3[i] + ".png";
+									CARDTYPE3 = "double";
+								}
+								if(compHand3.length == 3)
+								{
+									cardImage[64].src = cardDashsuit3[i] + ".png";
+									CARDTYPE3 = "triple";
+								}
+								if(compHand3.length == 4)
+								{
+									cardImage[65].src = cardDashsuit3[i] + ".png";
+									CARDTYPE3 = "fourofakind";
+									for(x = 0; x < CARDPERPERSON; x++)
+									{
+										if(compCardrank3[x] !== 1)
+										{
+											if(compCardrank3[x] !== "")
+											{
+												cardImage[66].src = cardDashsuit3[x] + ".png";
+												compHand3.push(compCardrank3[x]);
+												cardImage[x+39].src = "";
+												compCardrank3.splice(x, 1, "");
+												compCardsuit3.splice(x, 1, "");
+												addcheckTurn();
+												break wholeThing;												
+											}
+										}
+									}
+								}
+							}
+								if(i >= 12)
+								{
+									addcheckTurn();
+									break wholeThing;
+								}
+						}
+						firstTurnC3 = false;						
+					}
+					else
+					{
+						if(CARDTYPE == "" && CARDTYPE1 == "" && CARDTYPE2 == "")
+						{
+							for(i = 0; i < CARDPERPERSON; i++)
+							{
+								if(compCardrank2[i] !== "")
+								{
+									lastTurnC1 = false;
+								    lastTurnC2 = false;
+									lastTurnC3 = true;
+									cardImage[62].src = cardDashsuit3[i] + ".png";
+									cardImage[i+26].src = "";
+									compHand3.push(compCardrank3[i]);
+									comp3Rank = compCardrank3.splice(i, 1, "");
+									comp3Suit = compCardsuit3.splice(i, 1, "");
+									CARDTYPE3 = "single";
+									addcheckTurn();
+									break;
+								}
+							}
+						}
+						if(CARDTYPE2 == "single" || CARDTYPE == "single" || CARDTYPE1 == "single")
+						{
+							for(i = 0; i < CARDPERPERSON; i++)
+							{
+								if(comp2Rank[0] < compCardrank3[i])
+								{
+									if(compCardrank3[i] !== "")
+									{
+										lastTurnC1 = false;
+										lastTurnC2 = false;
+										lastTurnC3 = true;
+										compHand3.push(compCardrank3[i]);
+										cardImage[62].src = cardDashsuit3[i] + ".png";
+										cardImage[i+39].src = "";
+										comp3Rank = compCardrank3.splice(i, 1, "");
+										comp3Suit = compCardsuit3.splice(i, 1, "");
+										CARDTYPE3 = "single";
+										addcheckTurn();
+										break;
+									}
+								}
+								if(i >= 12)
+								{
+									cardImage[62].src = "";
+									if(myCard == 0)
+									{
+									}
+									else
+									{
+										comp3Rank[0] = myCard;
+									}
+									if(comp1Rank == 0)
+									{
+									}
+									else
+									{
+										comp3Rank[0] = comp1Rank[0];
+									}
+									if(comp2Rank == 0)
+									{	
+									}
+									else
+									{
+										comp3Rank[0] = comp2Rank[0];
+									}
+									CARDTYPE3 = "";
+									addcheckTurn();
+									break;
+								}
+							}
+						}
+						if(CARDTYPE2 == "double" || CARDTYPE == "double" || CARDTYPE1 == "double")
+						{
+							wholeThing:
+							for(i = 0; i < 13; i++)
+							{
+								if(comp2Rank[0] < compCardrank3[i] && compCardrank3[i] !== "")
+								{
+									for(x = 0; x < CARDPERPERSON; x++)
+									{
+										if(compCardrank3[i] == compCardrank3[x] && compCardrank3[x] !== "" && x != i)
+										{
+											lastTurnC1 = false;
+										    lastTurnC2 = false;
+										    lastTurnC3 = true;
+											compHand3.push(compCardrank3[i]);
+											cardImage[62].src = cardDashsuit3[i] + ".png";
+											cardImage[i+39].src = "";
+											comp3Rank = compCardrank3.splice(i, 1, "");
+											comp3Suit = compCardsuit3.splice(i, 1, "");
+											cardImage[63].src = cardDashsuit3[x] + ".png";
+											cardImage[x+39].src = "";
+											compHand3.push(compCardrank3[x]);
+											compCardrank3.splice(x, 1, "");
+											compCardsuit3.splice(x, 1, "");
+											CARDTYPE3 = "double";
+											addcheckTurn();
+											break wholeThing;
+										}
+
+									}
+								}
+								if(i >= 12)
+								{
+									cardImage[62].src = "";
+									cardImage[63].src = "";
+									if(myCard == 0)
+									{
+									}
+									else
+									{
+										comp3Rank[0] = myCard;
+									}
+									if(comp1Rank == 0)
+									{
+									}
+									else
+									{
+										comp3Rank[0] = comp1Rank[0];
+									}
+									if(comp2Rank == 0)
+									{	
+									}
+									else
+									{
+										comp3Rank[0] = comp2Rank[0];
+									}
+									CARDTYPE3 = "";
+									addcheckTurn();
+									break wholeThing;
+								}
+							}
+						}
+						if(CARDTYPE2 == "triple" || CARDTYPE == "triple" || CARDTYPE1 == "triple")
+						{
+							wholeThing:
+							for(i = 0; i < 13; i++)
+							{
+								if(comp2Rank[0] < compCardrank3[i] && compCardrank3[i] !== "")
+								{
+									for(x = 0; x < CARDPERPERSON; x++)
+									{
+										if(compCardrank3[i] == compCardrank3[x] && compCardrank3[x] !== "")
+										{
+											for(a = 0; a < CARDPERPERSON; a++)
+											{
+												if(compCardrank3[i] == compCardrank3[a] && compCardrank3[a] !== "" && x != i && x != a && a != i)
+												{
+													lastTurnC1 = false;
+												    lastTurnC2 = false;
+												    lastTurnC3 = true;
+													compHand3.push(compCardrank3[i]);
+													cardImage[62].src = cardDashsuit3[i] + ".png";
+													cardImage[i+39].src = "";
+													comp3Rank = compCardrank3.splice(i, 1, "");
+													comp3Suit = compCardsuit3.splice(i, 1, "");
+													cardImage[63].src = cardDashsuit3[x] + ".png";
+													cardImage[x+39].src = "";
+													compHand3.push(compCardrank3[x]);
+													compCardrank3.splice(x, 1, "");
+													compCardsuit3.splice(x, 1, "");
+													cardImage[64].src = cardDashsuit3[a] + ".png";
+													cardImage[a+39].src = "";
+													compHand3.push(compCardrank3[a]);
+													compCardrank3.splice(a, 1, "");
+													compCardsuit3.splice(a, 1, "");
+													CARDTYPE3 = "triple";
+													addcheckTurn();
+													break wholeThing;
+												}
+											}	
+										}
+									}
+								}
+								if(i >= 12)
+								{
+									cardImage[62].src = "";
+									cardImage[63].src = "";
+									cardImage[64].src = "";
+									if(myCard == 0)
+									{
+									}
+									else
+									{
+										comp3Rank[0] = myCard;
+									}
+									if(comp1Rank == 0)
+									{
+									}
+									else
+									{
+										comp3Rank[0] = comp1Rank[0];
+									}
+									if(comp2Rank == 0)
+									{	
+									}
+									else
+									{
+										comp3Rank[0] = comp2Rank[0];
+									}
+									CARDTYPE3 = "";
+									addcheckTurn();
+								}
+							}
+							
+						}
+						if(CARDTYPE == "fullhouse")
+						{
+							addcheckTurn();
+						}
+						if(CARDTYPE2 == "fourofakind"  || CARDTYPE == "fourofakind" || CARDTYPE1 == "fourofakind")
+						{
+							wholeThing:
+							for(i = 0; i < 13; i++)
+							{
+								if(comp2Rank[0] < compCardrank3[i] && compCardrank3[i] !== "")
+								{
+									for(x = 0; x < CARDPERPERSON; x++)
+									{
+										if(compCardrank3[i] == compCardrank3[x] && compCardrank3[x] !== "")
+										{
+											for(a = 0; a < CARDPERPERSON; a++)
+											{
+												if(compCardrank3[i] == compCardrank3[a] && compCardrank3[a] !== "")
+												{
+													for(b = 0; b < CARDPERPERSON; b++)
+													{
+														for(c = 0; c < CARDPERPERSON; c++)
+														{
+															if(compCardrank3[i] == compCardrank3[b] && compCardrank3[b] !== "" && x != i && x != a && x != b && i != a && i != b && a != b && compCardrank3[c] != "")
+															{
+																lastTurnC1 = false;
+															    lastTurnC2 = false;
+															    lastTurnC3 = true;															
+																compHand3.push(compCardrank3[i]);
+																cardImage[62].src = cardDashsuit3[i] + ".png";
+																cardImage[i+39].src = "";
+																comp3Rank = compCardrank3.splice(i, 1, "");
+																comp3Suit = compCardsuit3.splice(i, 1, "");
+																cardImage[63].src = cardDashsuit3[x] + ".png";
+																cardImage[x+39].src = "";
+																compHand3.push(compCardrank3[x]);
+																compCardrank3.splice(x, 1, "");
+																compCardsuit3.splice(x, 1, "");
+																cardImage[64].src = cardDashsuit3[a] + ".png";
+																cardImage[a+39].src = "";
+																compHand3.push(compCardrank3[a]);
+																compCardrank3.splice(a, 1, "");
+																compCardsuit3.splice(a, 1, "");
+																cardImage[65].src = cardDashsuit3[b] + ".png";
+																cardImage[b+39].src = "";
+																compHand3.push(compCardrank3[b]);
+																compCardrank3.splice(b, 1, "");
+																compCardsuit3.splice(b, 1, "");
+																cardImage[66].src = cardDashsuit3[c] + ".png";
+																cardImage[c+39].src = "";
+																compHand3.push(compCardrank3[c]);
+																compCardrank3.splice(c, 1, "");
+																compCardsuit3.splice(c, 1, "");
+																CARDTYPE3 = "fourofakind";
+																addcheckTurn();
+																break wholeThing;
+															}
+														}
+													}
+												}
+											}	
+										}
+									}
+								}
+								if(i >= 12)
+								{
+									cardImage[62].src = "";
+									cardImage[63].src = "";
+									cardImage[64].src = "";
+									cardImage[65].src = "";
+									cardImage[66].src = "";
+									if(myCard == 0)
+									{
+									}
+									else
+									{
+										comp3Rank[0] = myCard;
+									}
+									if(comp1Rank == 0)
+									{
+									}
+									else
+									{
+										comp3Rank[0] = comp1Rank[0];
+									}
+									if(comp2Rank == 0)
+									{	
+									}
+									else
+									{
+										comp3Rank[0] = comp2Rank[0];
+									}									
+									CARDTYPE3 = "";
+									addcheckTurn();
+									break wholeThing;
+								}
+							}
+						}
+						if(CARDTYPE == "straight")
+						{
+							addcheckTurn();
+						}
+						if(CARDTYPE == "flush")
+						{
+							addcheckTurn();
+						}
+						if(CARDTYPE == "straightflush")
+						{
+							addcheckTurn();
+						}
+						if(CARDTYPE == "royalflush")
+						{
+							addcheckTurn();
+						}
+						
+					}
+				}
+			}
+			function disableAll()
+			{
+				for(i = 0; i < CARDPERPERSON;i++)
+				{
+					btns[i].disabled = true;
+				}
+			}
+			function addcheckTurn()
+			{
+				playerTurn++;
+				if(playerTurn == 4)
+				{
+					playerTurn = 0;
+				}
+			}
+			function restartGame()
+			{	
+				fillIt();
+				closeimg();
+				for(i = 0; i < CARDPERPERSON; i++)
+				{
+					btns[i].style.display = "inline";
+				}
+				resetCard();
+				comp1Play();
+				comp2Play();
+				comp3Play();
+				btnforPlay.disabled = true;
+				btnforPass.disabled = false;
+				btnforReset.disabled = false;
+				myGif.src = 'ChinesePoker.gif';
+				
+			}
+			function closeimg()
+			{
+				cardImage[52].src = "";
+				cardImage[53].src = "";
+				cardImage[54].src = "";
+				cardImage[55].src = "";
+				cardImage[56].src = "";
+				cardImage[57].src = "";
+				cardImage[58].src = "";
+				cardImage[59].src = "";
+				cardImage[60].src = "";
+				cardImage[61].src = "";
+				cardImage[62].src = "";
+				cardImage[63].src = "";
+				cardImage[64].src = "";
+				cardImage[65].src = "";
+				cardImage[66].src = "";
+			}
+			function Pass()
+			{
+				if(comp1Rank == 0)
+				{
+				}
+				else
+				{
+					myCard = comp1Rank[0];
+				}
+				if(comp2Rank == 0)
+				{
+				}
+				else
+				{
+					myCard = comp2Rank[0];
+				}
+				if(comp3Rank == 0)
+				{	
+				}
+				else
+				{
+					myCard = comp3Rank[0];
+				}	
+			}
+		</script>
+	</head>
+	<body onload = "fillIt();comp1Play();comp2Play();comp3Play();" style = "background-image: url('background.jpg');">	
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<div>
+			Instructions: You must select 3 of diamond if you have it. When you're selecting straight, make sure to you select from largest to smallest or smallest to largest.
+			When you're playing a full house, select the triple first and then the double.
+		</div>
+		<div>
+			<button onclick = "selectCard(0);" ><img/></button>
+			<button onclick = "selectCard(1);" ><img/></button>
+			<button onclick = "selectCard(2);" ><img/></button>
+			<button onclick = "selectCard(3);" ><img/></button>
+			<button onclick = "selectCard(4);" ><img/></button>
+			<button onclick = "selectCard(5);" ><img/></button>
+			<button onclick = "selectCard(6);" ><img/></button>
+			<button onclick = "selectCard(7);" ><img/></button>
+			<button onclick = "selectCard(8);" ><img/></button>
+			<button onclick = "selectCard(9);" ><img/></button>
+			<button onclick = "selectCard(10);"><img/></button>
+			<button onclick = "selectCard(11);"><img/></button>
+			<button onclick = "selectCard(12);"><img/></button>
+			<button id = "playBtn" onclick = "playCard();checkWin();cardTypeQ();comp1Play();checkWin();comp2Play();checkWin();comp3Play();checkWin();btnforPlay.disabled = true;btnforPass.disabled = false;resetCard();">Play</button>
+			<button id = "resetBtn"onclick = "resetCard();">Reset Card</button>
+			<button id = "passBtn" onclick = "addcheckTurn();CARDTYPE = '';Pass();closeimg();comp1Play();checkWin();comp2Play();checkWin();comp3Play();checkWin();resetCard();">Pass</button>
+			<button onclick = "restartGame();">Restart Game</button>
+		</div>
+		<div>		
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			Computer 1
+		</div>
+		<div>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			Computer 2
+		</div>
+		<div>	
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			<img/>
+			Computer 3
+		</div>
+		<div>
+			<span>
+				Computer 1 Played:
+				<img/>
+				<img/>
+				<img/>
+				<img/>
+				<img/>
+			</span>
+		</div>
+		<div>
+			<span>
+				Computer 2 Played:
+				<img/>
+				<img/>
+				<img/>
+				<img/>
+				<img/>
+			</span>
+		</div>
+		<div>
+			<span>
+				Computer 3 Played:
+				<img/>
+				<img/>
+				<img/>
+				<img/>
+				<img/>
+			</span>
+		</div>
+		<!-- Gif Credits: Henry Creech -->
+		<img src = "ChinesePoker.gif" id = "gif" style = "position: absolute;index:-1;top:0px;left:500px;width:500px; height:auto;">
+		<script>
+		</script>
+	</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
